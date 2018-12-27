@@ -1,0 +1,501 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+stock_list = [3.5, 5, 2, 8, 4.2]
+
+returns = np.array(stock_list)
+print(np.log(returns))
+
+print("Mean: ", np.mean(returns))
+print("Std Dev: ", np.std(returns))
+
+N = 10
+assets = np.zeros((N, 100))
+returns = np.zeros((N, 100))
+
+R_1 = np.random.normal(1.01, 0.03, 100)
+returns[0] = R_1
+assets[0] = np.cumprod(R_1)
+
+for i in range(1, N):
+    R_i = R_1 + np.random.normal(0.001, 0.02, 100)
+    returns[i] = R_i  # Set each row of returns equal to the new R_i array
+    assets[i] = np.cumprod(R_i)
+
+mean_returns = [(np.mean(R) - 1) * 100 for R in returns]
+return_volatilities = [np.std(R) for R in returns]
+
+print(mean_returns)
+print(return_volatilities)
+
+plt.bar(np.arange(len(mean_returns)), mean_returns)
+plt.xlabel('Stock')
+plt.ylabel('Returns')
+plt.title('Returns for {0} Random Assets'.format(N))
+plt.show()
+
+weights = np.random.uniform(0, 1, N)
+weights = weights/np.sum(weights)
+
+p_returns = np.dot(weights, mean_returns)
+print("Expected return of the portfolio: ", p_returns)
+
+cov_mat = np.cov(returns)
+print(cov_mat)
+
+# Calculating the portfolio volatility or std deviation of the portfolioN
+var_p = np.dot(np.dot(weights, cov_mat), weights.T)
+vol_p = np.sqrt(var_p)
+print("Portfolio volatility: ", vol_p)
+
+# Confirming calculation
+vol_p_alt = np.sqrt(np.var(np.dot(weights, returns), ddof=1))
+print("Portfolio volatility: ", vol_p_alt)
+
+#pandas example
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.stats import stats
+import scipy as scipy
+import statsmodels.stats as stats2
+from statsmodels.stats import stattools
+
+
+returns = pd.DataFrame(np.random.normal(1.0, 0.03, (100, 10)))
+prices = returns.cumprod()
+prices.plot()
+plt.title('Randomly-generated Prices')
+plt.xlabel('Time')
+plt.ylabel('Price')
+plt.legend(loc=0);
+#plt.show()
+
+import quandl
+import datetime
+
+# We will look at stock prices over the past year, starting at January 1, 2016
+start = datetime.datetime(2016, 1, 1)
+end = datetime.date.today()
+
+# Let's get Apple stock data; Apple's ticker symbol is AAPL
+# First argument is the series we want, second is the source ("yahoo" for Yahoo! Finance), third is the start date, fourth is the end date
+s = "AAPL"
+
+apple = quandl.get("WIKI/" + s, start_date=start, end_date=end)
+
+type(apple)
+print(apple)
+
+a = "IBM"
+
+IBM = quandl.get("WIKI/" + a, start_date=start, end_date=end)
+
+type(IBM)
+print(IBM)
+
+apple.plot()
+# We still need to add the axis labels and title ourselves
+plt.title(s + " Prices")
+plt.ylabel("Price")
+plt.xlabel("Date");
+plt.show()
+
+
+# We still need to add the axis labels and title ourselves
+plt.title(s + " Prices")
+plt.ylabel("Price")
+plt.xlabel("Date");
+apple["Adj. Close"].plot(grid=True)
+plt.show()
+
+slice_1 = apple["Adj. Close"]
+print("Summary Statistics")
+print(apple.describe())
+
+slice_2 = IBM["Adj. Close"]
+print("Summary Statistics")
+print(IBM.describe())
+
+add_returns = slice_1.diff()[1:]
+mult_returns = slice_1.pct_change()[1:]
+
+plt.title("Multiplicative returns of " + s)
+plt.xlabel("Date")
+plt.ylabel("Percent Returns")
+mult_returns.plot();
+plt.show()
+
+df = pd.DataFrame(slice_1)
+rolling_mean = df.rolling(30).mean()
+rolling_mean.name = "30-day rolling mean"
+
+rolling_mean.plot()
+slice_1.plot()
+plt.title(s + " Price")
+plt.xlabel("Date")
+plt.ylabel("Price")
+plt.legend()
+plt.show()
+
+rolling_std = df.rolling(30).std()
+rolling_std.name = "30-day rolling volatility"
+rolling_std.plot()
+plt.title(rolling_std.name);
+plt.xlabel("Date")
+plt.ylabel("Standard Deviation")
+plt.show()
+
+# Remove the first element because percent change from nothing to something is NaN
+R = slice_1.pct_change()[1:]
+print(R)
+
+R2 = slice_2.pct_change()[1:]
+print(R2)
+
+# Plot a histogram using 20 bins
+plt.hist(R, bins=20)
+plt.xlabel('Return')
+plt.ylabel('Number of Days Observed')
+plt.title('Frequency Distribution of AAPL Returns, 2016');
+plt.show()
+
+plt.hist(R, bins=20, cumulative=True)
+plt.xlabel('Return')
+plt.ylabel('Number of Days Observed')
+plt.title('Cumulative Distribution of AAPL Returns, 2016');
+plt.show()
+
+# Geo mean and correcting for negative numbers
+
+ratios = R + np.ones(len(R))
+R_G = stats.gmean(ratios) - 1
+print('Geometric mean of returns:', R_G)
+
+X = np.sort(R)
+print('X: %s' %R)
+
+mu = np.mean(R)
+print('Mean of X:', mu)
+
+abs_dispersion = [np.abs(mu - X) for x in X]
+MAD = np.sum(abs_dispersion)/len(abs_dispersion)
+print(MAD)
+
+k = 1.25
+dist = k*np.std(R)
+l = [x for x in X if abs(x - mu) <= dist]
+print('Observations within', k, 'stds of mean:', l)
+print('Confirming that', float(len(l))/len(X), '>', 1 - 1/k**2)
+
+xs = np.linspace(-6,6, 300)
+normal = scipy.stats.norm.pdf(xs)
+plt.plot(xs, normal);
+plt.show()
+
+# Generate x-values for which we will plot the distribution
+xs2 = np.linspace(scipy.stats.lognorm.ppf(0.01, .7, loc=-.1), scipy.stats.lognorm.ppf(0.99, .7, loc=-.1), 150)
+
+# Negatively skewed distribution
+lognormal = scipy. stats.lognorm.pdf(xs2, .7)
+plt.plot(xs2, lognormal, label='Skew > 0')
+
+# Positively skewed distribution
+plt.plot(xs2, lognormal[::-1], label='Skew < 0')
+plt.legend();
+plt.show()
+
+print('Skew:', scipy.stats.skew(R))
+print('Mean:', np.mean(R))
+print('Median:', np.median(R))
+print("Excess kurtosis of returns: ", stats.kurtosis(R))
+plt.hist(R, 30)
+plt.show()
+
+#Correlelation Coeffiecient Calcs for random dist
+X = np.random.rand(50)
+Y = 2 * X + np.random.normal(0, 0.1, 50)
+print(np.cov(X, Y)[0, 1])
+
+#covariance and correlation outputs
+X2 = np.random.rand(50)
+Y2 = 2 * X2 + 4
+print('Covariance of X and Y: \n' + str(np.cov(X2, Y2)))
+print('Correlation of X and Y: \n' + str(np.corrcoef(X2, Y2)))
+
+cov_matrix = np.cov(X, Y)
+
+# We need to manually set the degrees of freedom on X to 1, as numpy defaults to 0 for variance
+# This is usually fine, but will result in a slight mismatch as np.cov defaults to 1
+error = cov_matrix[0, 0] - X.var(ddof=1)
+print('error: ' + str(error))
+
+X3 = np.random.rand(50)
+Y3 = np.random.rand(50)
+
+plt.scatter(X3,Y3)
+plt.xlabel('X Value')
+plt.ylabel('Y Value')
+plt.show()
+
+# taking the relevant value from the matrix returned by np.cov
+print('Correlation: ' + str(np.cov(X3,Y3)[0,1]/(np.std(X3)*np.std(Y3))))
+# Let's also use the builtin correlation function
+print('Built-in Correlation: ' + str(np.corrcoef(X3, Y3)[0, 1]))
+
+X4 = np.random.rand(50)
+Y4 = X4 + np.random.normal(0, 0.1, 50)
+
+plt.scatter(X4,Y4)
+plt.xlabel('X Value')
+plt.ylabel('Y Value')
+plt.show()
+
+print('Correlation: ' + str(np.corrcoef(X4, Y4)[0, 1]))
+
+X5 = np.random.rand(50)
+Y5 = X5 + np.random.normal(0, .2, 50)
+
+plt.scatter(X5,Y5)
+plt.xlabel('X Value')
+plt.ylabel('Y Value')
+plt.show()
+
+print('Correlation: ' + str(np.corrcoef(X5, Y5)[0, 1]))
+
+#STILL NEEDS WORK
+#plt.scatter(R,R2)
+#plt.xlabel('AAPLE')
+#plt.ylabel('IBM')
+#plt.title('Stock prices from ' + start + ' to ' + end)
+#plt.show()
+#print("Correlation coefficients")
+#print("IBM and AAPL: ", np.corrcoef(R,R2)[0,1])
+
+X = np.random.rand(50)
+Y = 2 * X + np.random.normal(0, 0.1, 50)
+
+print(np.cov(X, Y)[0, 1])
+
+X = np.random.rand(50)
+Y = np.random.rand(50)
+
+plt.scatter(X,Y)
+plt.xlabel('X Value')
+plt.ylabel('Y Value')
+
+# taking the relevant value from the matrix returned by np.cov
+print('Correlation: ' + str(np.cov(X,Y)[0,1]/(np.std(X)*np.std(Y))))
+# Let's also use the builtin correlation function
+print('Built-in Correlation: ' + str(np.corrcoef(X, Y)[0, 1]))
+
+#I think this issue ere is the time..i think the issue is the time periods are different?
+rolling_correlation = df.rolling(60).corr()
+#plt.plot(rolling_correlation)
+#plt.xlabel('Day')
+#plt.ylabel('60-day Rolling Correlation')
+#plt.show()
+print(rolling_correlation)
+
+
+def bimodal(n):
+    X13 = np.zeros((n))
+    for i in range(n):
+        if np.random.binomial(1, 0.5) == 0:
+            X13[i] = np.random.normal(-5, 1)
+        else:
+            X13[i] = np.random.normal(5, 1)
+    return X13
+
+
+X12 = bimodal(1000)
+
+# Let's see how it looks
+plt.hist(X12, bins=50)
+plt.ylabel('Frequency')
+plt.xlabel('Value')
+plt.show()
+print('mean:', np.mean(X12))
+print('standard deviation:', np.std(X12))
+
+from statsmodels.stats.stattools import jarque_bera
+print(jarque_bera(X12))
+
+
+mu_1 = 0
+mu_2 = 0
+sigma_1 = 1
+sigma_2 = 2
+x = np.linspace(-8, 8, 200)
+y = (1/(sigma_1 * np.sqrt(2 * 3.14159))) * np.exp(-(x - mu_1)*(x - mu_1) / (2 * sigma_1 * sigma_1))
+z = (1/(sigma_2 * np.sqrt(2 * 3.14159))) * np.exp(-(x - mu_2)*(x - mu_2) / (2 * sigma_2 * sigma_2))
+plt.plot(x, y, x, z)
+plt.xlabel('Value')
+plt.ylabel('Probability');
+plt.show()
+
+#y and x stock which makes up portfolio w for predicting their stock returns
+class ContinuousRandomVariable:
+    def __init__(self, a = 0, b = 1):
+        self.variableType = ""
+        self.low = a
+        self.high = b
+        return
+    def draw(self, numberOfSamples):
+        samples = np.random.uniform(self.low, self.high, numberOfSamples)
+        return samples
+
+class NormalRandomVariable(ContinuousRandomVariable):
+    def __init__(self, mean = 0, variance = 1):
+        ContinuousRandomVariable.__init__(self)
+        self.variableType = "Normal"
+        self.mean = mean
+        self.standardDeviation = np.sqrt(variance)
+        return
+    def draw(self, numberOfSamples):
+        samples = np.random.normal(self.mean, self.standardDeviation, numberOfSamples)
+        return samples
+
+Y_initial = 100
+X = NormalRandomVariable(0, 1)
+Y_returns = X.draw(100) # generate 100 daily returns
+Y = pd.Series(np.cumsum(Y_returns), name = 'Y') + Y_initial
+Y.plot()
+plt.xlabel('Time')
+plt.ylabel('Value');
+plt.show()
+
+Z_initial = 50
+Z_returns = X.draw(100)
+Z = pd.Series(np.cumsum(Z_returns), name = 'Z') + Z_initial
+Z.plot()
+plt.xlabel('Time')
+plt.ylabel('Value');
+plt.show()
+
+Y_quantity = 20
+Z_quantity = 50
+Y_weight = Y_quantity/(Y_quantity + Z_quantity)
+Z_weight = 1 - Y_weight
+
+W_initial = Y_weight * Y_initial + Z_weight * Z_initial
+W_returns = Y_weight * Y_returns + Z_weight * Z_returns
+W = pd.Series(np.cumsum(W_returns), name = 'Portfolio') + W_initial
+W.plot()
+plt.xlabel('Time')
+plt.ylabel('Value');
+
+pd.concat([Y, Z, W], axis = 1).plot()
+plt.xlabel('Time')
+plt.ylabel('Value');
+plt.show()
+
+# Take the daily returns
+returns = R
+
+#Set a cutoff
+cutoff = 0.01
+
+# Get the p-value of the JB test
+_, p_value, skewness, kurtosis = stattools.jarque_bera(R)
+print("The JB test p-value is: ", p_value)
+print("We reject the hypothesis that the data are normally distributed ", p_value < cutoff)
+print("The skewness of the returns is: ", skewness)
+print("The kurtosis of the returns is: ", kurtosis)
+plt.hist(R, bins = 50)
+plt.xlabel('Value')
+plt.ylabel('Occurrences');
+plt.show()
+
+# Take the sample mean and standard deviation of the returns
+R = slice_1.pct_change()[1:]
+abc = np.mean(R)
+abc2 = np.std(R)
+print(abc)
+print(abc2)
+
+x34 = ((-(abc + 4 * abc2)), (abc + 4 * abc2), len(R))
+print(x34)
+
+
+sample_distribution = ((1/np.sqrt(abc2 * abc2 * 2 * np.pi)) * np.exp(-(x34 - abc)*(x34 - abc) / (2 * abc2 * abc2)))
+print(sample_distribution)
+
+plt.hist(R, bins = 60, density = True);
+plt.plot(x34, sample_distribution)
+plt.xlabel('Value')
+plt.ylabel('Occurrences');
+plt.show()
+
+#data cleaning example
+import pandas as pd
+import numpy as np
+
+with open ('C:/Users/Sean/Desktop/Corsera\Energy Indicators.csv') as csvfile:
+    energy = pd.read_csv(csvfile)
+    energy = energy[17:244]
+energy = energy.drop(energy.columns[[0, 1]], axis=1)
+energy.rename(columns={'Unnamed: 2': 'Country','Unnamed: 3':'Energy Supply','Unnamed: 4':'Energy Supply per Capita','Unnamed: 5':'% Renewable'}, inplace=True)
+energy.replace('...', np.nan,inplace = True)
+energy['Energy Supply'] *= 1000000
+def remove_digit(data):
+    newData = ''.join([i for i in data if not i.isdigit()])
+    i = newData.find(r" \(.*\)")
+    if i>-1: newData = newData[:i]
+    return newData.strip()
+energy['Country'] = energy['Country'].apply(remove_digit)
+energy['Country'] = energy['Country'].str.replace(r" \(.*\)","")
+di = {'Republic of Korea': 'South Korea',
+'United States of America': 'United States',
+'United Kingdom of Great Britain and Northern Ireland': 'United Kingdom',
+'China, Hong Kong Special Administrative Region': 'Hong Kong'}
+energy.replace({'Country': di},inplace = True)
+#print(energy)
+
+with open ('C:/Users/Sean/Desktop/Corsera\world_bank.csv') as csvfile:
+    GDP = pd.read_csv(csvfile, skiprows=4)
+GDP.rename(columns={'Country Name': 'Country'}, inplace=True)
+di = {"Korea, Rep.": "South Korea",
+"Iran, Islamic Rep.": "Iran",
+"Hong Kong SAR, China": "Hong Kong"}
+GDP.replace({"Country": di},inplace = True)
+#print(GDP)
+
+with open('C:/Users/Sean/Desktop/Corsera\scimagojr-3.csv') as csvfile:
+    ScimEn = pd.read_csv(csvfile)
+
+df = pd.merge(pd.merge(energy, GDP, on='Country'), ScimEn, on='Country')
+
+# We only need 2006-2015 data
+df.set_index('Country',inplace=True)
+df = df[['Rank', 'Documents', 'Citable documents', 'Citations', 'Self-citations', 'Citations per document', 'H index', 'Energy Supply', 'Energy Supply per Capita', '% Renewable', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015']]
+df = (df.loc[df['Rank'].isin([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])])
+df.sort_values('Rank',inplace=True)
+print(df)
+
+def answer_one():
+    return df
+print(answer_one())
+
+def answer_two():
+    union = pd.merge(pd.merge(energy, GDP, on='Country', how='outer'), ScimEn, on='Country', how='outer')
+    intersect = pd.merge(pd.merge(energy, GDP, on='Country'), ScimEn, on='Country')
+    return len(union)-len(intersect)
+print(answer_two())
+
+def answer_three():
+    Top15 = answer_one()
+    avgGDP = Top15[['2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015']].mean(
+        axis=1).rename('avgGDP').sort_values(ascending=False)
+    return avgGDP
+print(answer_three())
+
+def answer_four():
+    Top15 = answer_one()
+    Top15['avgGDP'] = answer_three()
+    Top15.sort_values(by='avgGDP', inplace=True, ascending=False)
+    return abs(Top15.iloc[5]['2015']-Top15.iloc[5]['2006'])
+print(answer_four())
+
+Top15 = answer_one()
+print(Top15.iloc[:, 8])
