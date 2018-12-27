@@ -1,0 +1,355 @@
+
+def add_number(x,y,z=None): #if statement that adds each variable as long as z is a number.
+    if z==None: #assumes z is a number, if its not, we dont use it in the calculation
+        return x + y #if its not a number, add the two variables.
+    else:
+        return x + y + z #else, add the three variables.
+
+print(add_number(1,2))
+print(add_number(1,2,3))
+
+def add_numbers2(x, y, z=None, flag=False): #variables that include bools and str and simple computation
+    if (flag):
+        print("Flag is True")
+    if (z==None):
+        return x + y
+    else:
+        return x + y + z
+
+print(add_numbers2(1,2,flag=True))
+
+#tuple
+xy = ('a', 2, 'b',3) #tuple includes both int and str. below is the output of a tuple
+print(xy)
+
+xvz = ['z', 34, 'cb', 67] #this is a list and were appending the list with a new item.
+xvz.append(455) #adding the new item
+print(xvz)
+
+for item in xvz: #were printing the individual items in the list above including the appended items
+    print(item)
+
+x = "this is a nice string" #variable
+print(x[0]) #index location of 0
+print(x[0:1]) #index location of 0
+print(x[0:3]) #incex location of the first two charaters
+print(x[-4:-2]) #index lcoation of the 4th from the last through the 2nd from the lat
+
+last_name = "gearin"
+first_name = "sean"
+print(first_name + ' ' + last_name) #adding str together
+print(first_name * 4) #multiplying str
+
+last_name = "gearin leo hess sean".split(' '),[0] #splitting a string into individual components
+first_name = "gearin leo hess sean".split(' '),[-1] #splitting a string into individual components
+print(last_name)
+print(first_name)
+
+sales_record = {'price': 32.4, 'num_items': 4, 'person': 'Chris'} #Dictionary of items and the str corresponds to the second value in the dict
+sales_statement = '{} bought {} item(s) at a price of {} each for a total of {}'
+print(sales_statement.format(sales_record['person'],
+                             sales_record['num_items'],
+                             sales_record['price'],
+                             sales_record['num_items'] * sales_record['price'])) #math. These items are also in the same order as the str above
+
+import csv
+
+with open ("C:/Users/Sean\Desktop/Corsera/mpg.csv") as csvfile: #open csv fil and put it in a format thats usable
+    mpg = list(csv.DictReader(csvfile))
+print(mpg[:3]) #print the second and thrid columns from the csv file.
+print(len(mpg)) #count the length of the column ex the header
+
+print(mpg[0].keys()) #print the column headers / keys
+print(sum(float(d['cty']) for d  in mpg) / len(mpg)) #avg mpg mileage by column header
+print(sum(float(d['hwy']) for d  in mpg) / len(mpg)) #avg mpg mileage by column header
+
+cylinders = set(d['cyl'] for d in mpg)
+print(cylinders) # gives you the number of options in the column so it shows all the different cyl classes without duplication
+
+vehicleclass = set(d['class'] for d in mpg)
+print(vehicleclass) # gives you the number of options in the column so it shows all the different cyl classes without duplication
+
+HwyMpgByClass = []
+
+for t in vehicleclass:
+    summpg = 0
+    vclasscount = 0
+    for d in mpg:
+        if d['class'] == t: #for the differnt classes / rows in the column within the mpg file
+            summpg += float(d['hwy']) #add the row to the list above from hwy
+            vclasscount += 1 #count the number of rows that go int he list
+    HwyMpgByClass.append((t, summpg / vclasscount)) #adding the classes to the list and taking an average of the classes = sum / count
+HwyMpgByClass.sort(key=lambda x: x[1]) #sorting the classes low to high
+
+print(HwyMpgByClass)
+
+import datetime as dt
+
+delta = dt.timedelta(days=100)
+delta
+
+today = dt.date.today()
+x = today - delta
+
+print(today)
+print(x)
+
+
+def add(a, b): #function example
+    return a + b
+
+print(add(4, 5))
+
+store1 = [10, 45, 34, 35]
+store2 = [24, 14, 45, 90]
+cheapest = map(min, store1, store2)
+print(cheapest)
+
+people = ['Dr. Christopher Brooks', 'Dr. Kevyn Collins-Thompson', 'Dr. VG Vinod Vydiswaran', 'Dr. Daniel Romero'] #list of names
+
+def split_title_and_name(person): #funcion to apply to the list of names
+    title = person.split()[0] #were splitting the names into shorter strs and identifynig the title
+    lastname = person.split()[-1] #identifying the last name in the split str
+    return '{} {}'.format(title, lastname) #returning the two variables
+
+print(list(map(split_title_and_name, people))) #how do i print this?
+
+#lambda
+my_function = lambda a, b, c: a + b
+print(my_function(1,2,3))
+
+lowercase = 'abcdefghijklmnopqrstuvwxyz'
+digits = '0123456789'
+
+correct_answer = [a+b+c+d for a in lowercase for b in lowercase for c in digits for d in digits]
+
+print(correct_answer[:100])
+
+import numpy as np
+my_list = [1,2,3]
+x = np.array(my_list)
+print(x)
+
+y = [4,5,6]
+print(y)
+
+t = ['a', 'b', 'c'] + [1, 2, 3]
+print(t)
+
+import pandas as pd
+
+sports = {'basketball': 'USA', 'golf': 'Ireland', 'MMA': 'Brazil', 'football': 'Europe'}
+s = pd.Series(sports)
+print(s)
+
+print(s.iloc[3]) #printing the last variable in the dict
+print(s.loc['golf']) #using the golf key we can find the correspding str
+
+a = pd.Series(np.random.randint(0, 1000,10000)) #random number generator
+print(a.head()) #shows the first 5 rows
+
+class MyClass:
+    variable = "blah"
+
+    def function(self):
+        """ this function prints a message """
+        print("Hello world!")
+
+c = MyClass()
+print(c.function())#classes
+
+xs = pd.Series([1,2,3,4])
+xs.loc["animals"] = "Bears" #adding this to the list
+print(xs)
+
+purchase_1 = pd.Series({'Name': 'Chris',
+                        'Item Purchased': 'Dog Food',
+                        'Cost': 22.50})
+purchase_2 = pd.Series({'Name': 'Kevyn',
+                        'Item Purchased': 'Kitty Litter',
+                        'Cost': 2.50})
+purchase_3 = pd.Series({'Name': 'Vinod',
+                        'Item Purchased': 'Bird Seed',
+                        'Cost': 5.00})
+
+df = pd.DataFrame([purchase_1, purchase_2, purchase_3], index=['Store 1', 'Store 2', 'Store 3'])
+print(df)
+
+df['Cost'] *= 0.8 #20% discount to the costs
+print(df)
+
+import csv
+
+with open ('C:/Users/Sean/Desktop/Corsera\olympics.csv') as csvfile2:
+    df3 = pd.read_csv(csvfile2, index_col=0, skiprows=1)
+    df3.head()
+
+print(df3.columns)
+
+for col in df3.columns:
+    if col[:2] == '01':
+        df3.rename(columns={col: 'Gold' +col[4:]}, inplace = True)
+    if col[:2] == '02':
+        df3.rename(columns={col: 'silver' +col[4:]}, inplace = True)
+    if col[:2] == '03':
+        df3.rename(columns={col: 'bronze' +col[4:]}, inplace = True)
+    if col[:1] == '#':
+        df3.rename(columns={col: '#' +col[1:]}, inplace = True)
+    df.head()
+
+print(df3.columns)
+
+only_gold = df3.where(df3['Gold'] > 0)
+only_gold.head()
+print(only_gold)
+print(only_gold['Gold'].count())
+
+purchase_1 = pd.Series({'Name': 'Chris',
+                        'Item Purchased': 'Dog Food',
+                        'Cost': 22.50})
+purchase_2 = pd.Series({'Name': 'Kevyn',
+                        'Item Purchased': 'Kitty Litter',
+                        'Cost': 2.50})
+purchase_3 = pd.Series({'Name': 'Vinod',
+                        'Item Purchased': 'Bird Seed',
+                        'Cost': 5.00})
+
+df = pd.DataFrame([purchase_1, purchase_2, purchase_3], index=['Store 1', 'Store 1', 'Store 2'])
+print(df['Name'][df['Cost']>3])
+
+with open ('C:/Users/Sean/Desktop/Corsera\census.csv') as csvfile3:
+    df4 = pd.read_csv(csvfile3)
+    df4.head()
+
+print(df4.columns)
+
+purchase_1 = pd.Series({'Name': 'Chris',
+                        'Item Purchased': 'Dog Food',
+                        'Cost': 22.50})
+purchase_2 = pd.Series({'Name': 'Kevyn',
+                        'Item Purchased': 'Kitty Litter',
+                        'Cost': 2.50})
+purchase_3 = pd.Series({'Name': 'Vinod',
+                        'Item Purchased': 'Bird Seed',
+                        'Cost': 5.00})
+
+df = pd.DataFrame([purchase_1, purchase_2, purchase_3], index=['Store 1', 'Store 1', 'Store 2'])
+
+
+df = df.set_index([df.index, 'Name'])
+df.index.names = ['Location', 'Name']
+df = df.append(pd.Series(data={'Cost': 3.00, 'Item Purchased': 'Kitty Food'}, name=('Store 2', 'Kevyn')))
+print(df)
+
+import pandas as pd
+
+df = pd.read_csv('C:/Users/Sean/Desktop/Corsera\olympics.csv', index_col=0, skiprows=1)
+
+for col in df.columns:
+    if col[:2] == '01':
+        df.rename(columns={col: 'Gold'+col[4:]}, inplace=True)
+    if col[:2] == '02':
+        df.rename(columns={col: 'Silver'+col[4:]}, inplace=True)
+    if col[:2] == '03':
+        df.rename(columns={col: 'Bronze'+col[4:]}, inplace=True)
+    if col[:1] == '№':
+        df.rename(columns={col: '#'+col[1:]}, inplace=True)
+
+names_ids = df.index.str.split('\s\(')  # split the index by '('
+
+df.index = names_ids.str[0]  # the [0] element is the country name (new index)
+# the [1] element is the abbreviation or ID (take first 3 characters from that)
+df['ID'] = names_ids.str[1].str[:3]
+
+df = df.drop('Totals')
+print(df.head())
+
+def answer_zero():
+    return df.iloc[0]
+print(answer_zero())
+
+def answer_one():
+    return df[df['Gold'] == df['Gold'].max()].index[0]
+print(answer_one())
+
+def answer_two():
+    return (df['Gold'] - df['Gold.1']).idxmax()
+print(answer_two())
+
+def answer_three():
+    df2 = df[(df['Gold'] > 0) & (df['Gold.1'] > 0)]
+    return ((df2['Gold'] - df2['Gold.1'])/df2['Gold.2']).idxmax()
+print(answer_three())
+
+def answer_four():
+    df['Points'] = df['Gold.2'] * 3 + df['Silver.2'] * 2 + df['Bronze.2'] * 1
+    return df['Points']
+print(answer_four())
+
+census_df = pd.read_csv('C:/Users/Sean/Desktop/Corsera\census.csv')
+
+def answer_five():
+    return census_df['STNAME'].value_counts().idxmax()
+print(answer_five())
+
+def answer_six():
+    return census_df[census_df['SUMLEV'] == 50].groupby('STNAME')['CENSUS2010POP'].apply(lambda cp: cp.nlargest(3).sum()).nlargest(3).index.values.tolist()
+print(answer_six())
+
+def answer_seven():
+    return census_df[census_df['SUMLEV'] == 50].groupby('CTYNAME')['POPESTIMATE2010', 'POPESTIMATE2011', 'POPESTIMATE2012', 'POPESTIMATE2013', 'POPESTIMATE2014', 'POPESTIMATE2015'].apply(lambda cp: (cp.max(axis=1)-cp.min(axis=1)).max()).idxmax()
+print(answer_seven())
+
+def answer_eight():
+    return census_df[(census_df['REGION'] < 3) & (census_df['POPESTIMATE2015'] > census_df['POPESTIMATE2014']) & (census_df['CTYNAME'].str.contains('Washington'))][['STNAME', 'CTYNAME']]
+print(answer_eight())
+
+with open ('C:/Users/Sean/Desktop/Corsera\Energy Indicators.csv') as csvfile:
+    Energy = pd.read_csv(csvfile)
+    Energy = Energy[17:244]
+Energy = Energy.drop(Energy.columns[[0, 1]], axis=1)
+Energy.rename(columns={'Unnamed: 2': 'Country','Unnamed: 3':'Energy Supply','Unnamed: 4':'Energy Supply per Capita','Unnamed: 5':'% Renewable'}, inplace=True)
+Energy.replace('...', np.nan,inplace = True)
+Energy['Energy Supply'] *= 1000000
+
+def remove_digit(data):
+    newData = ''.join([i for i in data if not i.isdigit()])
+    i = newData.find('(')
+    if i>-1: newData = newData[:i]
+    return newData.strip()
+Energy['Country'] = Energy['Country'].apply(remove_digit)
+di = {'Republic of Korea': 'South Korea',
+'United States of America': 'United States',
+'United Kingdom of Great Britain and Northern Ireland': 'United Kingdom',
+'China, Hong Kong Special Administrative Region': 'Hong Kong'}
+Energy.replace({'Country': di},inplace = True)
+print(Energy)
+
+with open ('C:/Users/Sean/Desktop/Corsera\world_bank.csv') as csvfile:
+    GDP = pd.read_csv(csvfile)
+GDP.rename(columns={'Country Name': 'Country'}, inplace=True)
+di = {"Korea, Rep.": "South Korea",
+"Iran, Islamic Rep.": "Iran",
+"Hong Kong SAR, China": "Hong Kong"}
+GDP.replace({'Country': di},inplace = True)
+print(GDP)
+
+with open ('C:/Users/Sean/Desktop/Corsera\scimagojr-3.csv') as csvfile:
+    ScimEn = pd.read_csv(csvfile)
+    ScimEn = ScimEn[:15]
+
+newdf = pd.merge(Energy.reset_index(), ScimEn, on='Country').merge(GDP.reset_index(), on='Country')
+print(new_df)
+
+
+#new_df = (pd.merge(Energy, ScimEn, on='Country').merge(GDP.reset_index(), on='Country'))
+#df = pd.merge(ScimEn,Energy,how='inner',left_on='Country',right_on='Country')
+#new_df = pd.merge(df,GDP,how='inner',left_on=True,right_on='Country')
+
+
+
+
+
+
+
+
