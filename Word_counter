@@ -1,0 +1,18 @@
+# Examples
+
+#pdf word counter
+
+
+
+raw_text = open('C:/Users/J042666/Desktop/Tesla_Earnings.txt','r')
+txt_format = raw_text.read()
+print(txt_format)
+
+wordcount={}
+for word in txt_format.split():
+    if word not in wordcount:
+        wordcount[word] = 1
+    else:
+        wordcount[word] += 1
+print (word,wordcount)
+#txt_format.close();
