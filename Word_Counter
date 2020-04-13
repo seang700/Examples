@@ -1,0 +1,23 @@
+#Word Counter and export to Excel
+
+import matplotlib.pyplot as plt
+import pandas as pd
+raw_text = open('C:/Users/Sean/Desktop/Apple Earnings Transcript.txt','r')
+txt_format = raw_text.read()
+
+wordcount={}
+for word in txt_format.strip().split():
+    if word not in wordcount:
+        wordcount[word] = 1
+    else:
+        wordcount[word] += 1
+
+dict = wordcount
+
+df = pd.DataFrame.from_dict(dict, orient='Index').reset_index()
+df.rename(columns={'Word': 'Word', 0: 'Count'}, inplace=True)
+print(df)
+
+df.sort_values(by=["Count"], inplace=True)
+export_excel = df.to_excel(r'C:/Users/Sean/Desktop/Word Count.xlsx', index = True, header=True)
+print(df)
